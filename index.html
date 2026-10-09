@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hussein Abdo | GIS Analyst & Remote Sensing Specialist</title>
-<meta name="description" content="Hussein Abdo — GIS Analyst & Remote Sensing Specialist. Featured project: Multi-Temporal Environmental Assessment of Lake Murray, Australia using Landsat 8/9, NDVI, NDWI, MNDWI, NDTI and Surface Water Temperature analysis in ArcGIS Pro (2014–2024).">
-<meta name="keywords" content="GIS, Remote Sensing, Lake Murray, Australia, NDVI, NDWI, MNDWI, NDTI, Surface Water Temperature, Landsat 8, Landsat 9, ArcGIS Pro, Spatial Analyst, Environmental Assessment, Water Quality Monitoring, Vegetation Monitoring, Cartography, Hussein Abdo">
-<meta name="author" content="Hussein Abdo">
+<title>Hussein Elangarr | GIS Analyst & Remote Sensing Specialist</title>
+<meta name="description" content="Hussein Elangarr — GIS Analyst & Remote Sensing Specialist. Featured project: Multi-Temporal Environmental Assessment of Lake Murray, Australia using Landsat 8/9, NDVI, NDWI, MNDWI, NDTI and Surface Water Temperature analysis in ArcGIS Pro (2014–2024).">
+<meta name="keywords" content="GIS, Remote Sensing, Lake Murray, Australia, NDVI, NDWI, MNDWI, NDTI, Surface Water Temperature, Landsat 8, Landsat 9, ArcGIS Pro, Spatial Analyst, Environmental Assessment, Water Quality Monitoring, Vegetation Monitoring, Cartography, Hussein Elangarr">
+<meta name="author" content="Hussein Elangarr">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Multi-Temporal Environmental Assessment of Lake Murray, Australia | Hussein Abdo — GIS Portfolio">
+<meta property="og:title" content="Multi-Temporal Environmental Assessment of Lake Murray, Australia | Hussein Elangarr — GIS Portfolio">
 <meta property="og:description" content="Multi-temporal environmental assessment of Lake Murray, Australia (2014–2024) using Landsat 8/9 imagery and ArcGIS Pro — NDVI, NDWI, MNDWI, NDTI and Surface Water Temperature analysis.">
-<meta property="og:site_name" content="Hussein Abdo | GIS Portfolio">
+<meta property="og:site_name" content="Hussein Elangarr | GIS Portfolio">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Multi-Temporal Environmental Assessment of Lake Murray, Australia">
 <meta name="twitter:description" content="GIS & Remote Sensing case study using Landsat 8/9 and ArcGIS Pro to assess vegetation, water extent, turbidity and surface water temperature at Lake Murray, Australia (2014–2024).">
@@ -22,7 +22,7 @@
   "description": "A multi-temporal environmental assessment of Lake Murray, Australia using Landsat 8/9 satellite imagery and ArcGIS Pro, evaluating vegetation dynamics, water extent, water turbidity and surface water temperature between 2014 and 2024.",
   "creator": {
     "@type": "Person",
-    "name": "Hussein Abdo",
+    "name": "Hussein Elangarr",
     "jobTitle": "GIS Analyst & Remote Sensing Specialist",
     "email": "husseiinabdo0@gmail.com"
   },
@@ -1091,6 +1091,14 @@ footer span { color: var(--emerald); }
   .pv-next { right: 0.5rem; }
   .pv-stage img { max-height: 62vh; }
 }
+
+/* ── Siwa teaser card (added) ── */
+.siwa-thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;position:relative;z-index:1}
+.siwa-thumbs a{display:block;text-decoration:none;background:#fff;border:1px solid var(--glass-border);border-radius:var(--radius);padding:.35rem;transition:border-color var(--transition),transform var(--transition)}
+.siwa-thumbs a:hover{border-color:var(--emerald);transform:translateY(-3px)}
+.siwa-thumbs img{width:100%;height:auto}
+.siwa-thumbs span{display:block;text-align:center;font-family:var(--font-mono);font-size:.7rem;color:#0a1f3d;padding:.35rem 0 .15rem;letter-spacing:.08em}
+@media (max-width:900px){.siwa-thumbs{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -1130,7 +1138,7 @@ footer span { color: var(--emerald); }
   <div class="hero-content">
     <div class="hero-text">
       <p class="hero-eyebrow">GIS Portfolio</p>
-      <h1>Hussein<br>Abdalhmeed</h1>
+      <h1>Hussein<br>Elangarr</h1>
       <p class="hero-role">GIS Analyst & Remote Sensing Specialist</p>
       <p class="hero-desc">Passionate GIS Analyst specializing in Remote Sensing, Spatial Analysis, Urban Growth Monitoring, Environmental Modeling, Cartography, and GIS-Based Decision Support Systems. I work with ArcGIS Pro, ArcGIS Online, Google Earth Engine, QGIS, Landsat, Sentinel, and Python to transform geospatial data into actionable insights.</p>
       <div class="hero-btns">
@@ -1725,6 +1733,31 @@ footer span { color: var(--emerald); }
       </div>
 
     </div>
+      <!-- NEW: Siwa Oasis environmental change detection (links to its own case study page) -->
+    <div class="rs-project reveal siwa-teaser" style="margin-top:2.5rem">
+      <div class="rs-header">
+        <div class="rs-header-tags">
+          <span class="project-tag">GIS and Remote Sensing</span>
+          <span class="project-tag">Change Detection</span>
+          <span class="project-tag">ArcGIS Pro</span>
+        </div>
+        <h3 class="rs-title">Environmental Change Detection Using GIS and Remote Sensing</h3>
+        <p class="rs-period">📅 Siwa Oasis · 2014 · 2018 · 2021 · 2024</p>
+      </div>
+
+      <p class="rs-summary">A multi-indicator study of Siwa Oasis that maps vegetation (NDVI), surface water (MNDWI), water turbidity (NDTI) and surface water temperature across four observation years. Each indicator is presented as a complete ArcGIS Pro layout with yearly maps, change maps and a study area inset.</p>
+
+      <div class="siwa-thumbs">
+        <a href="siwa-change-detection.html#ndvi"><img src="images/siwa/ndvi-layout-web.png" width="2000" height="2588" loading="lazy" alt="NDVI layout for Siwa Oasis"><span>NDVI</span></a>
+        <a href="siwa-change-detection.html#mndwi"><img src="images/siwa/mndwi-layout-web.png" width="2000" height="2588" loading="lazy" alt="MNDWI layout for Siwa Oasis"><span>MNDWI</span></a>
+        <a href="siwa-change-detection.html#ndti"><img src="images/siwa/ndti-layout-web.png" width="2000" height="2588" loading="lazy" alt="NDTI layout for Siwa Oasis"><span>NDTI</span></a>
+        <a href="siwa-change-detection.html#sst"><img src="images/siwa/sst-layout-web.png" width="2000" height="2588" loading="lazy" alt="Surface water temperature layout for Siwa Oasis"><span>Temperature</span></a>
+      </div>
+
+      <div class="fp-buttons" style="margin-top:2rem">
+        <a href="siwa-change-detection.html" class="btn-primary">⬡ View Full Case Study</a>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1796,7 +1829,7 @@ footer span { color: var(--emerald); }
           <div class="social-icon" style="background:rgba(0,119,181,0.15)">💼</div>
           <div class="social-info">
             <p class="social-platform">LinkedIn</p>
-            <p class="social-handle">Hussein Abdo</p>
+            <p class="social-handle">Hussein Elangarr</p>
           </div>
           <span class="social-arrow">→</span>
         </a>
@@ -1816,11 +1849,11 @@ footer span { color: var(--emerald); }
           </div>
           <span class="social-arrow">→</span>
         </a>
-        <a href="https://www.facebook.com/search/top?q=Hussein+Abdo" target="_blank" class="social-link">
+        <a href="https://www.facebook.com/search/top?q=Hussein+Elangarr" target="_blank" class="social-link">
           <div class="social-icon" style="background:rgba(24,119,242,0.15)">🔵</div>
           <div class="social-info">
             <p class="social-platform">Facebook</p>
-            <p class="social-handle">Hussein Abdo</p>
+            <p class="social-handle">Hussein Elangarr</p>
           </div>
           <span class="social-arrow">→</span>
         </a>
@@ -1831,7 +1864,7 @@ footer span { color: var(--emerald); }
 
 <!-- FOOTER -->
 <footer>
-  © 2026 <span>Hussein Abdo</span> | GIS Analyst & Remote Sensing Specialist
+  © 2026 <span>Hussein Elangarr</span> | GIS Analyst & Remote Sensing Specialist
 </footer>
 
 <script>
