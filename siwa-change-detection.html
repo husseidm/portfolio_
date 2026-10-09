@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Environmental Change Detection Using GIS and Remote Sensing | Hussein Abdo — GIS Portfolio</title>
+<meta name="description" content="A multi-indicator study of Siwa Oasis (2014, 2018, 2021, 2024) using NDVI, MNDWI, NDTI and surface water temperature maps produced in ArcGIS Pro.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Tokens copied from the portfolio's index.html so both pages share one identity */
+:root{
+  --navy-900:#040d1a;--navy-800:#071428;--navy-700:#0a1f3d;--navy-600:#0d2b52;
+  --emerald:#00c896;--emerald-dim:#00a07a;--emerald-glow:rgba(0,200,150,.15);
+  --sky:#38bdf8;
+  --text-primary:#e8f4f8;--text-secondary:#8ba8bf;--text-muted:#4d6a80;
+  --glass-bg:rgba(7,20,40,.7);--glass-border:rgba(0,200,150,.15);--card-bg:rgba(10,31,61,.8);
+  --font-main:'Space Grotesk',sans-serif;--font-mono:'JetBrains Mono',monospace;
+  --radius:12px;--radius-lg:20px;--transition:.3s cubic-bezier(.4,0,.2,1);
+  /* aliases used by this page */
+  --paper:var(--navy-900);--surface:var(--card-bg);--ink:var(--text-primary);--muted:var(--text-secondary);
+  --line:var(--glass-border);--accent:var(--emerald);--accent-soft:var(--emerald-glow);
+  --ph-bg:rgba(217,165,33,.2);--ph-line:#d9a521;--maplink:var(--emerald);
+}
+[data-theme="light"]{
+  --navy-900:#f0f6ff;--navy-800:#e3eeff;--navy-700:#d0e3f8;--navy-600:#bcd5f0;
+  --text-primary:#0a1f3d;--text-secondary:#2d5070;--text-muted:#5a7a95;
+  --glass-bg:rgba(224,238,255,.8);--glass-border:rgba(0,160,122,.25);--card-bg:rgba(208,227,248,.9);
+  --maplink:#00775a;--ph-bg:rgba(217,165,33,.28);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-padding-top:130px;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{font-family:var(--font-main);background:var(--navy-900);color:var(--ink);line-height:1.65;overflow-x:hidden;transition:background var(--transition),color var(--transition)}
+img{max-width:100%;height:auto;display:block}
+a{color:var(--maplink)}
+:focus-visible{outline:3px solid var(--emerald);outline-offset:2px}
+
+/* nav (same as index.html) */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1rem 3rem;background:rgba(4,13,26,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border)}
+[data-theme="light"] nav{background:rgba(240,246,255,.9)}
+.nav-logo{font-family:var(--font-mono);font-size:1.1rem;font-weight:500;color:var(--emerald);letter-spacing:.05em;text-decoration:none}
+.nav-logo span{color:var(--text-primary)}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--text-secondary);text-decoration:none;font-size:.9rem;font-weight:500;letter-spacing:.03em;position:relative;transition:color var(--transition)}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;background:var(--emerald);transform:scaleX(0);transition:transform var(--transition)}
+.nav-links a:hover,.nav-links a.current{color:var(--maplink)}
+.nav-links a:hover::after,.nav-links a.current::after{transform:scaleX(1)}
+.nav-controls{display:flex;align-items:center;gap:1rem}
+.theme-toggle{width:44px;height:24px;background:var(--navy-600);border:1px solid var(--glass-border);border-radius:999px;cursor:pointer;position:relative}
+.theme-toggle::after{content:'🌙';position:absolute;top:2px;left:3px;width:18px;height:18px;border-radius:50%;font-size:11px;display:flex;align-items:center;justify-content:center;transition:transform var(--transition)}
+[data-theme="light"] .theme-toggle::after{content:'☀️';transform:translateX(20px)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;background:none;border:0}
+.hamburger span{display:block;width:24px;height:2px;background:var(--text-primary);border-radius:2px}
+
+/* hero */
+.hero-outer{position:relative;overflow:hidden;background:radial-gradient(ellipse 80% 60% at 70% 40%,rgba(0,200,150,.07) 0%,transparent 70%),radial-gradient(ellipse 60% 80% at 20% 80%,rgba(56,189,248,.05) 0%,transparent 60%)}
+.hero-outer::before{content:'';position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,200,150,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,150,.04) 1px,transparent 1px);background-size:50px 50px;mask-image:radial-gradient(ellipse at center,black 20%,transparent 80%);-webkit-mask-image:radial-gradient(ellipse at center,black 20%,transparent 80%)}
+.hero{position:relative;display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(1.5rem,4vw,4rem);align-items:center;max-width:1200px;margin:0 auto;padding:120px 3rem 4rem}
+.tag{display:flex;align-items:center;gap:.75rem;margin-bottom:1.3rem;font-family:var(--font-mono);font-size:.8rem;color:var(--maplink);letter-spacing:.2em;text-transform:uppercase}
+.tag::before{content:'';width:32px;height:1px;background:var(--emerald)}
+.hero h1{font-size:clamp(2rem,4.4vw,3.2rem);font-weight:700;line-height:1.12;letter-spacing:-.02em;margin-bottom:1rem}
+.hero .sub{font-family:var(--font-mono);font-size:clamp(.95rem,1.6vw,1.1rem);color:var(--maplink);margin-bottom:1.3rem;max-width:36em;line-height:1.6}
+.hero p.intro{color:var(--text-secondary);max-width:38em;margin:0 0 2rem;line-height:1.75}
+.btns{display:flex;flex-wrap:wrap;gap:1rem}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 1.8rem;border-radius:var(--radius);font:600 .9rem var(--font-main);text-decoration:none;border:1px solid var(--glass-border);cursor:pointer;letter-spacing:.02em;transition:all var(--transition)}
+.btn.primary{background:var(--emerald);color:#04121f;border-color:var(--emerald)}
+.btn.primary:hover{background:#00e0ab;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,200,150,.35)}
+.btn.ghost{background:transparent;color:var(--text-primary)}
+.btn.ghost:hover{border-color:var(--emerald);color:var(--maplink);background:var(--emerald-glow);transform:translateY(-2px)}
+.hero figure{margin:0}
+.hero .frame{display:block;border:1px solid var(--glass-border);background:#fff;padding:.4rem;border-radius:var(--radius);max-width:430px;margin-inline:auto;cursor:zoom-in}
+.hero figcaption{font-size:.82rem;color:var(--text-muted);margin-top:.7rem;text-align:center}
+
+/* page grid */
+.wrap{display:grid;grid-template-columns:210px minmax(0,1fr);gap:clamp(1.5rem,3vw,3rem);max-width:1200px;margin:0 auto;padding:0 3rem 5rem}
+.secnav{position:sticky;top:100px;align-self:start;font-size:.9rem}
+.secnav p{margin:0 0 .6rem;font-family:var(--font-mono);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted)}
+.secnav ul{list-style:none;border-left:1px solid var(--glass-border)}
+.secnav a{display:block;padding:.3rem .9rem;margin-left:-1px;border-left:2px solid transparent;color:var(--text-secondary);text-decoration:none;transition:color var(--transition)}
+.secnav a:hover{color:var(--text-primary)}
+.secnav a[aria-current="true"]{color:var(--maplink);border-left-color:var(--emerald);font-weight:600}
+
+main section{padding:3rem 0;border-top:1px solid var(--glass-border)}
+main section:first-child{border-top:0;padding-top:0}
+.section-label{font-family:var(--font-mono);font-size:.75rem;color:var(--maplink);letter-spacing:.25em;text-transform:uppercase;margin-bottom:.75rem;display:flex;align-items:center;gap:.75rem}
+.section-label::before{content:'';width:24px;height:1px;background:var(--emerald)}
+h2{font-size:clamp(1.6rem,2.8vw,2.2rem);font-weight:700;letter-spacing:-.02em;line-height:1.2;margin-bottom:1.4rem}
+h3{font-size:1.1rem;font-weight:600;letter-spacing:-.01em;line-height:1.3;margin:1.8rem 0 .6rem}
+p{margin:0 0 1rem;max-width:46em;color:var(--text-secondary)}
+p b,li b,td b{color:var(--text-primary)}
+ul.plain{padding-left:1.2rem;max-width:46em;color:var(--text-secondary)}
+ul.plain li{margin-bottom:.5rem}
+
+.ph{background:var(--ph-bg);border-bottom:2px solid var(--ph-line);padding:0 .25rem;border-radius:2px;color:var(--text-primary);font-style:normal}
+.note{border-left:3px solid var(--emerald);background:var(--emerald-glow);padding:.9rem 1.1rem;border-radius:0 var(--radius) var(--radius) 0;margin:1.3rem 0;max-width:46em}
+.note strong{display:block;margin-bottom:.2rem;color:var(--text-primary)}
+.note p:last-child{margin:0}
+.formula{display:inline-block;margin:.2rem 0 1rem;padding:.8rem 1.2rem;background:var(--card-bg);border:1px solid var(--glass-border);border-radius:var(--radius);font:500 1rem var(--font-mono);color:var(--text-primary)}
+.formula small{display:block;font:.78rem var(--font-main);color:var(--text-muted);margin-top:.3rem}
+
+table{border-collapse:collapse;width:100%;background:var(--card-bg);font-size:.93rem;color:var(--text-secondary)}
+th,td{text-align:left;padding:.7rem .9rem;border:1px solid var(--glass-border);vertical-align:top}
+th{background:var(--emerald-glow);color:var(--text-primary);font-weight:600}
+.tablewrap{overflow-x:auto;margin:1rem 0 1.4rem;border-radius:var(--radius)}
+
+figure.map{margin:1.8rem 0 0}
+figure.map a.zoom{display:block;background:#fff;border:1px solid var(--glass-border);border-radius:var(--radius);padding:.5rem;cursor:zoom-in;transition:border-color var(--transition)}
+figure.map a.zoom:hover{border-color:var(--emerald)}
+figure.map img{width:100%;max-width:1000px;margin-inline:auto}
+figure.map figcaption{font-size:.9rem;color:var(--text-secondary);margin-top:.9rem;max-width:56em}
+figure.map figcaption b{color:var(--text-primary)}
+.viewbtn{margin-top:.9rem}
+
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.75rem;margin-top:1.4rem}
+.card{background:var(--card-bg);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:1.3rem;display:flex;flex-direction:column;transition:border-color var(--transition)}
+.card:hover{border-color:var(--emerald)}
+.card h3{margin:0 0 .8rem}
+.card a.zoom{display:block;border:1px solid var(--glass-border);background:#fff;padding:.35rem;border-radius:var(--radius);cursor:zoom-in}
+.card p{font-size:.9rem;margin:.9rem 0 0}
+.card .cap{font-family:var(--font-mono);font-size:.74rem;color:var(--text-muted)}
+.card .btnrow{margin-top:1.1rem}
+.card .btn{padding:.55rem 1.1rem;font-size:.85rem}
+
+.findings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.4rem}
+.findings div{background:var(--card-bg);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:1.2rem 1.4rem}
+.findings h3{margin-top:0;color:var(--text-primary)}
+.findings ul{padding-left:1.1rem;color:var(--text-secondary)}
+.findings li{margin-bottom:.55rem;font-size:.95rem}
+.findings .wide{grid-column:1/-1}
+.chips{display:flex;flex-wrap:wrap;gap:.6rem;list-style:none;margin-bottom:1rem}
+.chips li{padding:.35rem .9rem;border:1px solid rgba(0,200,150,.25);background:var(--emerald-glow);border-radius:6px;font-size:.85rem;color:var(--text-primary)}
+dl.meta{display:grid;grid-template-columns:200px 1fr;background:var(--card-bg);border:1px solid var(--glass-border);border-radius:var(--radius-lg);overflow:hidden}
+dl.meta dt,dl.meta dd{margin:0;padding:.8rem 1.1rem;border-bottom:1px solid var(--glass-border)}
+dl.meta dt{font-family:var(--font-mono);font-size:.78rem;letter-spacing:.05em;color:var(--maplink);background:var(--emerald-glow)}
+dl.meta dd{color:var(--text-secondary)}
+dl.meta dt:last-of-type,dl.meta dd:last-of-type{border-bottom:0}
+
+footer{background:var(--navy-900);border-top:1px solid var(--glass-border);padding:2rem 3rem;text-align:center;font-family:var(--font-mono);font-size:.8rem;color:var(--text-muted)}
+footer span{color:var(--maplink)}
+footer a{color:var(--maplink)}
+
+/* lightbox */
+.lb{position:fixed;inset:0;z-index:200;background:#060f1a;display:flex;flex-direction:column}
+.lb[hidden]{display:none}
+.lb-bar{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;padding:.6rem .9rem;color:#e8f4f8;background:#071428;border-bottom:1px solid rgba(0,200,150,.15)}
+.lb-title{flex:1 1 220px;font-weight:600;font-size:.9rem}
+.lb-bar button,.lb-bar a{background:#0a1f3d;color:#e8f4f8;border:1px solid rgba(0,200,150,.3);border-radius:8px;padding:.3rem .65rem;font:inherit;font-size:.85rem;cursor:pointer;text-decoration:none}
+.lb-bar button:hover,.lb-bar a:hover{border-color:#00c896;color:#00c896}
+.lb-stage{flex:1;overflow:auto;display:flex;padding:1rem;-webkit-overflow-scrolling:touch}
+.lb-stage img{margin:auto;background:#fff;max-width:none;flex:none}
+.lb-hint{font-size:.78rem;color:#8ba8bf;padding:.35rem .9rem;background:#071428;font-family:var(--font-mono)}
+body.lb-open{overflow:hidden}
+
+@media (max-width:1100px){
+  .wrap{grid-template-columns:minmax(0,1fr)}
+  .secnav{position:sticky;top:60px;z-index:20;background:var(--navy-900);margin:0 -3rem;padding:.5rem 3rem;border-bottom:1px solid var(--glass-border)}
+  .secnav p{display:none}
+  .secnav ul{display:flex;overflow-x:auto;border-left:0;gap:.25rem;white-space:nowrap}
+  .secnav a{border-left:0;border-bottom:2px solid transparent;margin:0;padding:.35rem .7rem}
+  .secnav a[aria-current="true"]{border-bottom-color:var(--emerald)}
+}
+@media (max-width:900px){
+  nav{padding:1rem 1.5rem}
+  .nav-links{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(4,13,26,.97);padding:1.5rem;gap:1rem;border-bottom:1px solid var(--glass-border)}
+  [data-theme="light"] .nav-links{background:rgba(240,246,255,.98)}
+  .nav-links.open{display:flex}
+  .hamburger{display:flex}
+  .hero{grid-template-columns:1fr;padding:100px 1.5rem 3rem}
+  .wrap{padding:0 1.5rem 4rem}
+  .secnav{margin:0 -1.5rem;padding:.5rem 1.5rem;top:58px}
+  .cards,.findings{grid-template-columns:1fr}
+  dl.meta{grid-template-columns:1fr}
+  dl.meta dt{border-bottom:0;padding-bottom:.2rem}
+  footer{padding:1.5rem}
+}
+</style>
+</head>
+
+<body>
+
+<nav id="navbar" aria-label="Main">
+  <a class="nav-logo" href="index.html#hero" aria-label="Hussein elnagarr, portfolio home">HA<span>.</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html#hero">Home</a></li>
+    <li><a href="index.html#featured-project">Featured</a></li>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="index.html#skills">Skills</a></li>
+    <li><a href="index.html#projects">Projects</a></li>
+    <li><a class="current" href="index.html#remote-sensing-projects">Remote Sensing</a></li>
+    <li><a href="index.html#tools">Tools</a></li>
+    <li><a href="index.html#community">Community</a></li>
+    <li><a href="index.html#contact">Contact</a></li>
+  </ul>
+  <div class="nav-controls">
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle light and dark theme"></button>
+    <button class="hamburger" id="hamburger" aria-label="Open menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- 1. HERO -->
+<div class="hero-outer">
+<div class="hero">
+  <div>
+    <p class="tag">GIS and Remote Sensing</p>
+    <h1>Environmental Change Detection Using GIS and Remote Sensing</h1>
+    <p class="sub">A Multi-Indicator Approach to Environmental Change Analysis Using Satellite-Derived Spectral Indices and GIS.</p>
+    <p class="intro">This project maps four environmental indicators for Siwa Oasis in 2014, 2018, 2021 and 2024: vegetation (NDVI), surface water (MNDWI), water turbidity (NDTI) and surface water temperature. Each indicator is presented as a complete ArcGIS Pro layout, with yearly maps, change maps where available, and a study area inset.</p>
+    <div class="btns">
+      <a class="btn primary" href="#ndvi">⬡ Explore the Analysis</a>
+      <a class="btn ghost" href="index.html#remote-sensing-projects">← Back to Portfolio</a>
+    </div>
+  </div>
+  <figure>
+    <a class="frame zoom" href="images/siwa/ndvi-layout.png" data-lightbox data-title="NDVI: Vegetation Distribution and Change, Siwa Oasis (2014–2024)">
+      <img src="images/siwa/ndvi-layout-web.png" width="2000" height="2588"
+           alt="Complete ArcGIS Pro layout of NDVI for Siwa Oasis: four yearly NDVI maps, two NDVI change maps, study area outline, legends, charts, scale bar and north arrow.">
+    </a>
+    <figcaption>The NDVI layout, shown uncropped. Select it to open the full-size viewer.</figcaption>
+  </figure>
+</div>
+</div>
+
+<div class="wrap">
+
+<nav class="secnav" aria-label="Case study sections">
+  <p>On this page</p>
+  <ul>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#study-area">Study area</a></li>
+    <li><a href="#methodology">Data and methodology</a></li>
+    <li><a href="#ndvi">NDVI</a></li>
+    <li><a href="#mndwi">MNDWI</a></li>
+    <li><a href="#ndti">NDTI</a></li>
+    <li><a href="#sst">Temperature</a></li>
+    <li><a href="#gallery">Map gallery</a></li>
+    <li><a href="#change-detection">Reading change maps</a></li>
+    <li><a href="#findings">Key findings</a></li>
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+    <li><a href="#metadata">Project metadata</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- 2. OVERVIEW -->
+<section id="overview">
+  <p class="section-label">Project Overview</p>
+  <h2>Project overview</h2>
+  <p>Satellite imagery records how a landscape reflects and emits energy. A GIS turns those measurements into maps that can be compared from one year to the next. This project combines both to examine environmental conditions in Siwa Oasis across four observation years between 2014 and 2024. According to the layouts, the aim is to assess environmental and agricultural change over the ten-year period and to identify areas where vegetation, water resources, turbidity and surface temperature changed noticeably.</p>
+  <p>Four indicators are used. Each describes a different environmental property, so they are read side by side and are not interchangeable.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Indicator</th><th>Environmental property</th><th>Standard formulation</th></tr></thead>
+    <tbody>
+      <tr><td><b>NDVI</b></td><td>Density and vigour of green vegetation</td><td>(NIR − Red) / (NIR + Red)</td></tr>
+      <tr><td><b>MNDWI</b></td><td>Open surface water, separated from other surfaces</td><td>(Green − SWIR) / (Green + SWIR)</td></tr>
+      <tr><td><b>NDTI</b></td><td>Relative water turbidity, used as a proxy</td><td>(Red − Green) / (Red + Green)</td></tr>
+      <tr><td><b>Surface water temperature</b> (labelled “SST” on the layout)</td><td>Thermal state of the water surface</td><td>Derived from thermal-infrared data <mark class="ph">[processing method to be confirmed]</mark></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>The formulas above are the standard definitions of each index. The exact bands and sensor used in this project are listed in the methodology section once confirmed.</p>
+</section>
+
+<!-- 3. STUDY AREA -->
+<section id="study-area">
+  <p class="section-label">Study Area</p>
+  <h2>Study area</h2>
+  <p>All four layouts are titled <b>Siwa Oasis</b> and share the same study area outline, shown in the <i>Map Location</i> inset. The analysed extent is a single, irregular body with a large indentation on its western side and a few small interior gaps. In the yearly maps these gaps appear as blank areas inside the extent.</p>
+  <p>The inset shows the outline only. It carries no basemap, coordinates or regional context, and the layouts do not state the country or region. The titles of the water layouts describe the extent as a water body within the oasis.</p>
+  <div class="tablewrap">
+  <table>
+    <tbody>
+      <tr><th scope="row">Place name (as labelled)</th><td>Siwa Oasis</td></tr>
+      <tr><th scope="row">Country / region</th><td><mark class="ph">[to be confirmed]</mark></td></tr>
+      <tr><th scope="row">Coordinates / projection</th><td><mark class="ph">[to be added]</mark></td></tr>
+      <tr><th scope="row">Analysed extent</th><td><mark class="ph">[area in km², if you want it stated]</mark></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>The scale bar on each layout runs to 9 km (7 miles), which gives a sense of the size of the analysed extent.</p>
+</section>
+
+<!-- 4. DATA AND METHODOLOGY -->
+<section id="methodology">
+  <p class="section-label">Data &amp; Methodology</p>
+  <h2>Data and methodology</h2>
+  <p>The table separates what the supplied layouts document from what still needs to be confirmed. Steps are only described as performed where the layouts show their results.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Workflow element</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Map composition in ArcGIS Pro</td><td>Documented: four complete layouts</td></tr>
+      <tr><td>Common study area extent for all indicators</td><td>Documented: identical outline in every layout. Extraction method <mark class="ph">[e.g. clip to boundary: confirm]</mark></td></tr>
+      <tr><td>Spectral index maps for 2014, 2018, 2021, 2024</td><td>Documented for NDVI, MNDWI, NDTI</td></tr>
+      <tr><td>Surface temperature maps for 2014, 2018, 2021, 2024</td><td>Documented. Temperature product and retrieval method <mark class="ph">[to be confirmed]</mark></td></tr>
+      <tr><td>Difference (change) maps</td><td>Documented for NDVI, MNDWI and NDTI, for the pairs labelled 2014 &amp; 2018 and 2024 &amp; 2021. Subtraction order <mark class="ph">[to be confirmed]</mark>. No difference map appears in the temperature layout.</td></tr>
+      <tr><td>Thematic classification</td><td>Documented: change maps use three classes (decrease, stable, increase). NDTI yearly maps use three turbidity classes. Class thresholds <mark class="ph">[to be confirmed]</mark></td></tr>
+      <tr><td>Yearly summary charts</td><td>Documented: each layout includes charts of yearly values</td></tr>
+      <tr><td>Satellite image preparation</td><td><mark class="ph">[sensor, processing level, atmospheric correction: to be confirmed]</mark></td></tr>
+      <tr><td>Raster calculation</td><td><mark class="ph">[tool used, e.g. Raster Calculator: to be confirmed]</mark></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Data details to be confirmed</h3>
+  <div class="tablewrap">
+  <table>
+    <tbody>
+      <tr><th scope="row">Satellite sensor(s)</th><td><mark class="ph">[to be confirmed]</mark></td></tr>
+      <tr><th scope="row">Study years</th><td>2014, 2018, 2021, 2024 (from the layouts)</td></tr>
+      <tr><th scope="row">Acquisition dates</th><td><mark class="ph">[day / month for each year]</mark></td></tr>
+      <tr><th scope="row">Spatial resolution</th><td><mark class="ph">[to be confirmed]</mark></td></tr>
+      <tr><th scope="row">Difference calculation</th><td><mark class="ph">[e.g. later year minus earlier year: to be confirmed]</mark></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- 5. NDVI -->
+<section id="ndvi">
+  <p class="section-label">NDVI</p>
+  <h2>Vegetation Distribution and Change Analysis</h2>
+  <p><b>What NDVI measures.</b> The Normalized Difference Vegetation Index compares near-infrared and red reflectance. Healthy vegetation reflects strongly in the near-infrared and absorbs red light, so higher NDVI values generally indicate denser, greener vegetation. Water and bare surfaces give low or negative values.</p>
+  <div class="formula">NDVI = (NIR − Red) / (NIR + Red)<small>Standard definition. Band numbers: <mark class="ph">[to be added once the sensor is confirmed]</mark></small></div>
+
+  <h3>What the layout shows</h3>
+  <ul class="plain">
+    <li><b>Main maps:</b> NDVI for 2014, 2018, 2021 and 2024, drawn on a continuous ramp from red-orange (low) through yellow to dark green (high). The legend runs from −0.423 to 0.225.</li>
+    <li><b>Difference maps:</b> NDVI change for 2014 &amp; 2018 and for 2024 &amp; 2021, classified as <i>decrease</i> (yellow), <i>stable</i> (orange) and <i>increase</i> (red).</li>
+    <li><b>Charts:</b> vegetation area in km² for each year (2.43, 1.45, 1.14 and 0.65 for 2014, 2018, 2021 and 2024) and the highest and lowest NDVI value for each year, as plotted.</li>
+    <li><b>Study area:</b> the Map Location inset in the lower left.</li>
+  </ul>
+
+  <h3>Observed patterns</h3>
+  <p>The 2014 and 2018 maps are dominated by orange tones, with greener values along parts of the western margin. In 2021 the extent shifts toward yellow, and in 2024 most of it is yellow to yellow-green. The 2014 &amp; 2018 change map has a large red area across the north-eastern and central parts and some yellow patches near the margins. In the 2024 &amp; 2021 change map almost the whole extent falls in the stable class, with small red and yellow areas at the northern tip.</p>
+  <p>Because the chart plots vegetation area while the maps show index values, the two should be read as different measures. How the area values were derived <mark class="ph">[to be confirmed]</mark>.</p>
+
+  <div class="note"><strong>Reading the legend</strong><p>The NDVI values in this layout stay low across the whole extent (maximum 0.225). Interpretation should therefore focus on relative differences between years and areas rather than on absolute vegetation density.</p></div>
+
+  <figure class="map">
+    <a class="zoom" href="images/siwa/ndvi-layout.png" data-lightbox data-title="NDVI: Vegetation Distribution and Change, Siwa Oasis (2014–2024)">
+      <img src="images/siwa/ndvi-layout-web.png" width="2000" height="2588" loading="lazy"
+        alt="ArcGIS Pro layout titled Analysis of the change in vegetation cover in Siwa Oasis between four years from 2014 to 2024. Top two rows: NDVI maps for 2014, 2018, 2021 and 2024, and NDVI change maps for 2014 and 2018 and for 2024 and 2021. Lower area: study area outline, change legend with decrease, stable and increase classes in Arabic, explanatory text, two line charts, a colour ramp from −0.423 to 0.225, scale bar and north arrow.">
+    </a>
+    <figcaption><b>Figure 1.</b> NDVI layout for Siwa Oasis. Yearly NDVI maps (2014, 2018, 2021, 2024), NDVI change maps (2014 &amp; 2018; 2024 &amp; 2021), study area inset, three-class change legend (Arabic labels: decrease, stability, increase in vegetation cover), yearly charts of vegetation area (km²) and of highest and lowest NDVI values, colour ramp (−0.423 to 0.225), scale bar (0–9 km) and north arrow.</figcaption>
+  </figure>
+  <button class="btn ghost viewbtn" type="button" data-open="ndvi">Open full-size NDVI layout</button>
+</section>
+
+<!-- 6. MNDWI -->
+<section id="mndwi">
+  <p class="section-label">MNDWI</p>
+  <h2>Water Distribution and Change Analysis</h2>
+  <p><b>Purpose.</b> The second layout uses the <b>Modified</b> Normalized Difference Water Index (MNDWI), not the original NDWI. MNDWI replaces the near-infrared band with a shortwave-infrared band, which separates open water from built-up and bare surfaces more reliably. Higher values indicate open water.</p>
+  <div class="formula">MNDWI = (Green − SWIR) / (Green + SWIR)<small>Standard definition. Band numbers: <mark class="ph">[to be added once the sensor is confirmed]</mark></small></div>
+
+  <h3>What the layout shows</h3>
+  <ul class="plain">
+    <li><b>Main maps:</b> MNDWI for 2014, 2018, 2021 and 2024 on a blue ramp. The legend runs from −0.221 to 0.463.</li>
+    <li><b>Difference maps:</b> MNDWI change for 2014 &amp; 2018 and for 2024 &amp; 2021, classified as decrease (yellow), stable (orange) and increase (red) in the water surface.</li>
+    <li><b>Charts:</b> a water area chart in km² (25.8, 26.5, 26.7 and 26.6 for 2014, 2018, 2021 and 2024) and the highest and lowest MNDWI value for each year, as plotted.</li>
+  </ul>
+
+  <h3>Observed patterns</h3>
+  <p>In all four years most of the extent is light to mid blue, with darker blue along parts of the margin and in a few small interior spots. The plotted water area varies by less than 1 km² across the four years. The 2014 &amp; 2018 change map shows large yellow (decrease) patches in the north-east and centre, with a small red (increase) area at the western tip. The 2024 &amp; 2021 change map is mostly stable, with small red and yellow areas at the north and west.</p>
+  <p>The chart title in the layout is “area of water change”. What the plotted area represents and how it was calculated <mark class="ph">[to be confirmed]</mark>.</p>
+
+  <figure class="map">
+    <a class="zoom" href="images/siwa/mndwi-layout.png" data-lightbox data-title="MNDWI: Water Distribution and Change, Siwa Oasis (2014–2024)">
+      <img src="images/siwa/mndwi-layout-web.png" width="2000" height="2588" loading="lazy"
+        alt="ArcGIS Pro layout titled Analysis of the change in the water body in Siwa Oasis over four years between 2014 and 2024. MNDWI maps for 2014, 2018, 2021 and 2024 in blue tones, two MNDWI change maps in yellow, orange and red classes, a study area outline, a legend in Arabic, explanatory text, two line charts, a colour ramp from −0.221 to 0.463, scale bar and north arrow.">
+    </a>
+    <figcaption><b>Figure 2.</b> MNDWI layout for Siwa Oasis. Yearly MNDWI maps (2014, 2018, 2021, 2024), MNDWI change maps (2014 &amp; 2018; 2024 &amp; 2021), study area inset, three-class change legend (Arabic labels: decrease, stability, increase in water surface), yearly charts of water area (km²) and of highest and lowest MNDWI values, colour ramp (−0.221 to 0.463), scale bar (0–9 km) and north arrow.</figcaption>
+  </figure>
+  <button class="btn ghost viewbtn" type="button" data-open="mndwi">Open full-size MNDWI layout</button>
+</section>
+
+<!-- 7. NDTI -->
+<section id="ndti">
+  <p class="section-label">NDTI</p>
+  <h2>Water Turbidity Patterns and Change Analysis</h2>
+  <p><b>Purpose.</b> The Normalized Difference Turbidity Index (NDTI) uses the contrast between red and green reflectance. Turbid water, which carries suspended sediment, reflects relatively more red light, so higher NDTI values are associated with higher turbidity. The layout text describes the index as being based on the red and green bands.</p>
+  <div class="formula">NDTI = (Red − Green) / (Red + Green)<small>Standard definition, consistent with the red and green bands stated in the layout. Band numbers: <mark class="ph">[to be added once the sensor is confirmed]</mark></small></div>
+
+  <h3>What the layout shows</h3>
+  <ul class="plain">
+    <li><b>Main maps:</b> NDTI for 2014, 2018, 2021 and 2024, classified into three turbidity classes: clear water (yellow), medium turbidity (orange) and high turbidity (red).</li>
+    <li><b>Difference maps:</b> NDTI change for 2014 &amp; 2018 and for 2024 &amp; 2021. The legend is titled “Map Change 2018 &amp; 2014” and uses decrease in turbidity (yellow), stable (orange) and a red class labelled high turbidity.</li>
+    <li><b>Chart:</b> mean NDTI for each year, plotted as −49, −63, −72 and −106 for 2014, 2018, 2021 and 2024. The scaling of these values <mark class="ph">[to be confirmed]</mark>.</li>
+  </ul>
+
+  <h3>Observed patterns</h3>
+  <p>The 2014 map is mostly in the clear class, with medium turbidity along parts of the margin and red along some edges. In 2018 and 2021 the medium class covers a larger part of the western and central area. By 2024 almost the whole extent falls in the clear class, with narrow medium and high classes at some edges. The two change maps both show extensive non-stable classes, with the larger red area in the centre and north-east on the 2014 &amp; 2018 map.</p>
+
+  <div class="note"><strong>Limits of NDTI</strong><p>NDTI is a relative proxy derived from reflectance. It is not a laboratory measurement of turbidity. Its values are affected by water depth, bottom reflectance, shoreline mixing, atmospheric conditions and the dissolved or suspended material present, and they are not calibrated against in-situ turbidity samples unless that was done <mark class="ph">[state whether any field data was used]</mark>. The classes should be read as relative patterns between years and locations.</p></div>
+
+  <figure class="map">
+    <a class="zoom" href="images/siwa/ndti-layout.png" data-lightbox data-title="NDTI: Turbidity Patterns and Change, Siwa Oasis (2014–2024)">
+      <img src="images/siwa/ndti-layout-web.png" width="2000" height="2588" loading="lazy"
+        alt="ArcGIS Pro layout titled Spatial Distribution of Water Turbidity Using NDTI 2014 and 2024. NDTI maps for 2014, 2018, 2021 and 2024 classified in yellow, orange and red, two NDTI change maps, study area outline, change legend and turbidity class legend in Arabic, explanatory text, a line chart of mean NDTI by year, scale bar and north arrow.">
+    </a>
+    <figcaption><b>Figure 3.</b> NDTI layout for Siwa Oasis. Yearly NDTI maps in three turbidity classes (Arabic labels: clear water, medium turbidity, high turbidity), NDTI change maps (2014 &amp; 2018; 2024 &amp; 2021), study area inset, change legend, line chart of mean NDTI by year, scale bar (0–9 km) and north arrow.</figcaption>
+  </figure>
+  <button class="btn ghost viewbtn" type="button" data-open="ndti">Open full-size NDTI layout</button>
+</section>
+
+<!-- 8. TEMPERATURE -->
+<section id="sst">
+  <p class="section-label">Surface Temperature</p>
+  <h2>Surface Temperature Distribution and Change Analysis</h2>
+  <p><b>Purpose.</b> The fourth layout maps the temperature of the water surface in 2014, 2018, 2021 and 2024, to show how the thermal state of the water varies across the extent and between years. The layout labels the maps “SST”. Siwa Oasis is an inland setting, so this page uses the term <b>surface water temperature</b> rather than sea surface temperature.</p>
+  <p><b>Product and processing.</b> <mark class="ph">[Satellite product, thermal band, conversion to temperature and any emissivity or atmospheric correction: to be confirmed]</mark></p>
+
+  <h3>What the layout shows</h3>
+  <ul class="plain">
+    <li><b>Main maps:</b> temperature for 2014, 2018, 2021 and 2024. The legend runs from 10.34 to 21.73.</li>
+    <li><b>Chart:</b> mean water surface temperature for each year, plotted as 17.09, 14.69, 18.27 and 13.38 for 2014, 2018, 2021 and 2024, with the axis labelled in degrees. The unit scale <mark class="ph">[°C: to be confirmed]</mark>.</li>
+    <li><b>Difference map:</b> this layout does not include one. The change in temperature is shown only through the yearly maps and the chart.</li>
+  </ul>
+
+  <h3>Observed patterns</h3>
+  <p>The colour ramp assigns red-orange to the lowest legend values and blue to the highest, which reverses the common warm-red convention. The patterns below follow the legend, not colour associations. In 2014 most of the extent is light orange, with darker red-orange in the east. In 2018 darker red-orange covers most of the central area. In 2021 it covers the west and centre, with lighter tones in the east. In 2024 a band of dark red-orange runs across the north-east and centre, while the south and west are paler. The highest legend values (blue) appear along parts of the margin in every year.</p>
+  <p>The plotted yearly means fall, rise, then fall again, so they do not form a steady trend.</p>
+
+  <div class="note"><strong>Interpretation cautions</strong><p>Thermal imagery from a single date reflects conditions on that day, so differences between years depend on the season and time of acquisition <mark class="ph">[acquisition dates to be added]</mark>. Pixels along the margin can mix water with land, which may affect edge values.</p></div>
+
+  <figure class="map">
+    <a class="zoom" href="images/siwa/sst-layout.png" data-lightbox data-title="Surface Water Temperature Distribution, Siwa Oasis (2014–2024)">
+      <img src="images/siwa/sst-layout-web.png" width="2000" height="2588" loading="lazy"
+        alt="ArcGIS Pro layout titled Analysis of the change in water body temperatures in Siwa Oasis. Four temperature maps labelled SST 2014, SST 2018, SST 2021 and SST 2024 in a red-orange to blue ramp, a study area outline, a line chart of mean water surface temperature by year, a colour ramp from 10.34 to 21.73, scale bar and north arrow.">
+    </a>
+    <figcaption><b>Figure 4.</b> Surface water temperature layout for Siwa Oasis. Yearly temperature maps (2014, 2018, 2021, 2024), study area inset, line chart of mean water surface temperature by year (17.09, 14.69, 18.27, 13.38), colour ramp (10.34 to 21.73), scale bar (0–9 km) and north arrow. This layout has no difference map.</figcaption>
+  </figure>
+  <button class="btn ghost viewbtn" type="button" data-open="sst">Open full-size temperature layout</button>
+</section>
+
+<!-- 9. GALLERY -->
+<section id="gallery">
+  <p class="section-label">Original Maps</p>
+  <h2>Original map gallery</h2>
+  <p>The four layouts below are shown complete, at their original proportions. Select a map to open it in a viewer with zoom controls.</p>
+  <div class="cards">
+
+    <article class="card">
+      <h3>NDVI — Vegetation Distribution and Change</h3>
+      <a class="zoom" href="images/siwa/ndvi-layout.png" data-lightbox data-title="NDVI: Vegetation Distribution and Change, Siwa Oasis (2014–2024)">
+        <img src="images/siwa/ndvi-layout-web.png" width="2000" height="2588" loading="lazy" alt="Complete NDVI layout for Siwa Oasis with yearly maps, change maps, study area inset, charts, legend, scale bar and north arrow.">
+      </a>
+      <p>Yearly NDVI maps and two change maps for Siwa Oasis.</p>
+      <p>NDVI compares near-infrared and red reflectance to show relative vegetation density. Change maps classify decrease, stable and increase.</p>
+      <p class="cap">Figure 1. NDVI layout, 2014–2024.</p>
+      <div class="btnrow"><button class="btn ghost" type="button" data-open="ndvi">View full size</button></div>
+    </article>
+
+    <article class="card">
+      <h3>MNDWI — Water Distribution and Change</h3>
+      <a class="zoom" href="images/siwa/mndwi-layout.png" data-lightbox data-title="MNDWI: Water Distribution and Change, Siwa Oasis (2014–2024)">
+        <img src="images/siwa/mndwi-layout-web.png" width="2000" height="2588" loading="lazy" alt="Complete MNDWI layout for Siwa Oasis with yearly maps, change maps, study area inset, charts, legend, scale bar and north arrow.">
+      </a>
+      <p>Yearly MNDWI maps and two change maps showing open water.</p>
+      <p>MNDWI uses green and shortwave-infrared reflectance to separate open water from other surfaces. Change maps classify decrease, stable and increase.</p>
+      <p class="cap">Figure 2. MNDWI layout, 2014–2024.</p>
+      <div class="btnrow"><button class="btn ghost" type="button" data-open="mndwi">View full size</button></div>
+    </article>
+
+    <article class="card">
+      <h3>NDTI — Turbidity Patterns and Change</h3>
+      <a class="zoom" href="images/siwa/ndti-layout.png" data-lightbox data-title="NDTI: Turbidity Patterns and Change, Siwa Oasis (2014–2024)">
+        <img src="images/siwa/ndti-layout-web.png" width="2000" height="2588" loading="lazy" alt="Complete NDTI layout for Siwa Oasis with yearly turbidity class maps, change maps, study area inset, chart, legends, scale bar and north arrow.">
+      </a>
+      <p>Yearly turbidity class maps and two change maps.</p>
+      <p>NDTI contrasts red and green reflectance as a relative proxy for turbidity. It is not a direct laboratory measurement.</p>
+      <p class="cap">Figure 3. NDTI layout, 2014–2024.</p>
+      <div class="btnrow"><button class="btn ghost" type="button" data-open="ndti">View full size</button></div>
+    </article>
+
+    <article class="card">
+      <h3>SST — Surface Temperature Distribution and Change</h3>
+      <a class="zoom" href="images/siwa/sst-layout.png" data-lightbox data-title="Surface Water Temperature Distribution, Siwa Oasis (2014–2024)">
+        <img src="images/siwa/sst-layout-web.png" width="2000" height="2588" loading="lazy" alt="Complete surface water temperature layout for Siwa Oasis with four yearly temperature maps, study area inset, line chart, colour ramp, scale bar and north arrow.">
+      </a>
+      <p>Yearly surface water temperature maps and a chart of yearly means.</p>
+      <p>Thermal-infrared data are converted to temperature to show how the water surface varies across the extent and between years. This layout has no difference map.</p>
+      <p class="cap">Figure 4. Surface water temperature layout, 2014–2024.</p>
+      <div class="btnrow"><button class="btn ghost" type="button" data-open="sst">View full size</button></div>
+    </article>
+
+  </div>
+</section>
+
+<!-- 10. CHANGE DETECTION -->
+<section id="change-detection">
+  <p class="section-label">Change Detection</p>
+  <h2>Reading the change maps</h2>
+  <p>Change detection compares the same indicator at two dates. Three different things are easy to confuse.</p>
+  <ul class="plain">
+    <li><b>Index values</b> describe the condition in one year, for example how green or how wet a pixel is in 2014.</li>
+    <li><b>The difference</b> is the result of subtracting one year's values from another's, pixel by pixel. It states how much the value moved and in which direction, and nothing more.</li>
+    <li><b>The environmental interpretation</b> is a separate step. It depends on what the indicator represents and on what is known about the area and the dates.</li>
+  </ul>
+  <p>A positive difference is not automatically an improvement, and a negative difference is not automatically degradation. The meaning depends on the indicator, the order of subtraction, the chosen years and the environmental context. For turbidity and temperature, a rise is not good or bad in itself. For water, an increase in the index may reflect a real change in water extent or a change in conditions on the acquisition dates.</p>
+
+  <h3>What the supplied layouts provide</h3>
+  <ul class="plain">
+    <li>Change maps for NDVI, MNDWI and NDTI, for the pairs labelled <b>2014 &amp; 2018</b> and <b>2024 &amp; 2021</b>. There is no 2018–2021 pair and no 2014–2024 map.</li>
+    <li>Changes are shown in three classes: decrease (yellow), stable (orange) and increase (red). The class thresholds are not shown.</li>
+    <li>The temperature layout has yearly maps and a chart of yearly means, and no difference map.</li>
+  </ul>
+  <div class="note"><strong>Information needed to finalise this section</strong><p>The subtraction order <mark class="ph">[later minus earlier, or the reverse: to be confirmed]</mark> and the class thresholds <mark class="ph">[to be confirmed]</mark> determine what the red and yellow classes mean. Until they are confirmed, the change maps are described by their legend labels only.</p></div>
+</section>
+
+<!-- 11. FINDINGS -->
+<section id="findings">
+  <p class="section-label">Results</p>
+  <h2>Key findings</h2>
+  <p>These points describe what is visible in the layouts. They are observations of patterns, and they do not establish causes.</p>
+  <div class="findings">
+    <div>
+      <h3>Vegetation</h3>
+      <ul>
+        <li>NDVI values stay low across the extent (legend maximum 0.225).</li>
+        <li>The 2014 and 2018 maps are mostly orange, 2021 shifts toward yellow, and 2024 is mostly yellow to yellow-green.</li>
+        <li>The chart plots vegetation area of 2.43, 1.45, 1.14 and 0.65 km² for 2014, 2018, 2021 and 2024.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Water</h3>
+      <ul>
+        <li>Most of the extent is light to mid blue in every year, with darker values near some margins.</li>
+        <li>The plotted water area changes by less than 1 km² across the four years (25.8 to 26.7 km²).</li>
+        <li>The plotted maximum MNDWI declines from 0.46 in 2014 to 0.31 in 2024.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Turbidity</h3>
+      <ul>
+        <li>The medium turbidity class covers more of the western and central area in 2018 and 2021 than in 2014.</li>
+        <li>The 2024 map is almost entirely in the clear class.</li>
+        <li>The plotted mean NDTI values decline from −49 in 2014 to −106 in 2024, in the layout's own scaling.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Temperature</h3>
+      <ul>
+        <li>The plotted yearly means are 17.09, 14.69, 18.27 and 13.38, falling, rising and falling again.</li>
+        <li>The spatial pattern differs from year to year, with a distinct dark band across the north-east and centre in 2024.</li>
+        <li>Blue (highest legend values) appears along parts of the margin in every year.</li>
+      </ul>
+    </div>
+    <div class="wide">
+      <h3>Changes between observation periods</h3>
+      <ul>
+        <li>For NDVI and MNDWI, the 2014 &amp; 2018 change maps show large non-stable areas in the north-east and centre, while the 2024 &amp; 2021 maps are mostly stable.</li>
+        <li>The NDTI change maps show extensive non-stable classes in both periods.</li>
+        <li>The temperature layout contains no difference map.</li>
+        <li>What the increase and decrease classes mean in each case depends on the subtraction order, which is still to be confirmed.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 12. TOOLS -->
+<section id="tools">
+  <p class="section-label">Technologies</p>
+  <h2>Tools and technologies</h2>
+  <ul class="chips">
+    <li>ArcGIS Pro</li>
+    <li>Remote Sensing</li>
+    <li>Spectral Indices</li>
+    <li>Raster Analysis</li>
+    <li>Change Detection</li>
+    <li>Scientific Cartography</li>
+  </ul>
+  <p><mark class="ph">[Add Spatial Analyst, Raster Calculator, Google Earth Engine, Python or others here only if they were used in this project.]</mark></p>
+</section>
+
+<!-- 13. CONCLUSION -->
+<section id="conclusion">
+  <p class="section-label">Conclusion</p>
+  <h2>Conclusion</h2>
+  <p>Each indicator in this study describes a different property of Siwa Oasis: vegetation through NDVI, open water through MNDWI, relative turbidity through NDTI and the thermal state of the water surface through temperature. Viewed together across 2014, 2018, 2021 and 2024, they give a multi-dimensional picture that no single index provides.</p>
+  <p>The maps show where and how values differ between years. They do not by themselves establish why. Explaining the causes would need additional data, such as climate records, land-use information or field measurements, and a confirmed account of the acquisition dates and processing.</p>
+</section>
+
+<!-- 14. METADATA -->
+<section id="metadata">
+  <p class="section-label">Metadata</p>
+  <h2>Project metadata</h2>
+  <dl class="meta">
+    <dt>Project title</dt><dd>Environmental Change Detection Using GIS and Remote Sensing</dd>
+    <dt>Study area</dt><dd>Siwa Oasis <mark class="ph">[country / region to be confirmed]</mark></dd>
+    <dt>Observation periods</dt><dd>2014, 2018, 2021, 2024 <mark class="ph">[acquisition dates to be added]</mark></dd>
+    <dt>Satellite sensor</dt><dd><mark class="ph">[to be confirmed]</mark></dd>
+    <dt>GIS software</dt><dd>ArcGIS Pro</dd>
+    <dt>Analytical methods</dt><dd>Spectral index calculation (NDVI, MNDWI, NDTI), surface water temperature mapping, change detection with three-class difference maps, scientific cartography</dd>
+  </dl>
+</section>
+
+</main>
+</div>
+
+<footer>
+  © 2026 <span>Hussein elnagarr</span> | GIS Analyst &amp; Remote Sensing Specialist · <a href="index.html#remote-sensing-projects">Back to portfolio</a>
+</footer>
+
+<!-- Lightbox -->
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Map viewer" hidden>
+  <div class="lb-bar">
+    <span class="lb-title" id="lbTitle"></span>
+    <button type="button" id="lbPrev" aria-label="Previous map">‹ Prev</button>
+    <button type="button" id="lbNext" aria-label="Next map">Next ›</button>
+    <button type="button" id="lbOut" aria-label="Zoom out">−</button>
+    <button type="button" id="lbIn" aria-label="Zoom in">+</button>
+    <button type="button" id="lbFit" aria-label="Fit to screen">Fit</button>
+    <a id="lbOrig" href="#" target="_blank" rel="noopener">Original file</a>
+    <button type="button" id="lbClose" aria-label="Close viewer">Close</button>
+  </div>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" src="" alt=""></div>
+  <div class="lb-hint">Scroll or drag to pan. Use + and − to zoom. Arrow keys switch maps. Esc closes.</div>
+</div>
+
+<script>
+(function(){
+  document.getElementById('themeToggle').addEventListener('click',function(){
+    var root=document.documentElement;
+    root.setAttribute('data-theme',root.getAttribute('data-theme')==='light'?'':'light');
+  });
+  document.getElementById('hamburger').addEventListener('click',function(){
+    document.getElementById('navLinks').classList.toggle('open');
+  });
+  /* ---- Lightbox (no dependencies; links still open the image if JS is off) ---- */
+  var items=[],seen={};
+  document.querySelectorAll('a[data-lightbox]').forEach(function(a){
+    var href=a.getAttribute('href');
+    if(!seen[href]){seen[href]=items.length;items.push({href:href,title:a.dataset.title,alt:a.querySelector('img').alt});}
+  });
+  var keyOf={ndvi:'images/siwa/ndvi-layout.png',mndwi:'images/siwa/mndwi-layout.png',ndti:'images/siwa/ndti-layout.png',sst:'images/siwa/sst-layout.png'};
+  var lb=document.getElementById('lb'),img=document.getElementById('lbImg'),stage=document.getElementById('lbStage');
+  var title=document.getElementById('lbTitle'),orig=document.getElementById('lbOrig');
+  var idx=0,zoom=1,last=null,RATIO=4250/5500;
+
+  function baseWidth(){
+    var w=stage.clientWidth-32,h=stage.clientHeight-32;
+    return Math.max(200,Math.min(w,h*RATIO));
+  }
+  function apply(){img.style.width=(baseWidth()*zoom)+'px';}
+  function show(i){
+    idx=(i+items.length)%items.length;
+    var it=items[idx];
+    img.src=it.href;img.alt=it.alt;title.textContent=it.title;orig.href=it.href;
+    zoom=1;apply();stage.scrollTop=0;stage.scrollLeft=0;
+  }
+  function open(i){
+    last=document.activeElement;
+    lb.hidden=false;document.body.classList.add('lb-open');
+    show(i);document.getElementById('lbClose').focus();
+  }
+  function close(){
+    lb.hidden=true;document.body.classList.remove('lb-open');
+    if(last&&last.focus)last.focus();
+  }
+  function setZoom(z){zoom=Math.min(4,Math.max(1,z));apply();}
+
+  document.querySelectorAll('a[data-lightbox]').forEach(function(a){
+    a.addEventListener('click',function(e){e.preventDefault();open(seen[a.getAttribute('href')]);});
+  });
+  document.querySelectorAll('[data-open]').forEach(function(b){
+    b.addEventListener('click',function(){open(seen[keyOf[b.dataset.open]]);});
+  });
+  document.getElementById('lbClose').onclick=close;
+  document.getElementById('lbPrev').onclick=function(){show(idx-1);};
+  document.getElementById('lbNext').onclick=function(){show(idx+1);};
+  document.getElementById('lbIn').onclick=function(){setZoom(zoom+.5);};
+  document.getElementById('lbOut').onclick=function(){setZoom(zoom-.5);};
+  document.getElementById('lbFit').onclick=function(){setZoom(1);};
+  window.addEventListener('resize',function(){if(!lb.hidden)apply();});
+  document.addEventListener('keydown',function(e){
+    if(lb.hidden)return;
+    if(e.key==='Escape')close();
+    else if(e.key==='ArrowRight')show(idx+1);
+    else if(e.key==='ArrowLeft')show(idx-1);
+    else if(e.key==='+'||e.key==='=')setZoom(zoom+.5);
+    else if(e.key==='-')setZoom(zoom-.5);
+    else if(e.key==='Tab'){ /* keep focus inside the dialog */
+      var f=lb.querySelectorAll('button,a[href]'),first=f[0],lastEl=f[f.length-1];
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();lastEl.focus();}
+      else if(!e.shiftKey&&document.activeElement===lastEl){e.preventDefault();first.focus();}
+    }
+  });
+  /* drag to pan */
+  var drag=null;
+  stage.addEventListener('mousedown',function(e){drag={x:e.clientX,y:e.clientY,l:stage.scrollLeft,t:stage.scrollTop};stage.style.cursor='grabbing';});
+  window.addEventListener('mousemove',function(e){if(!drag)return;stage.scrollLeft=drag.l-(e.clientX-drag.x);stage.scrollTop=drag.t-(e.clientY-drag.y);});
+  window.addEventListener('mouseup',function(){drag=null;stage.style.cursor='';});
+
+  /* ---- Highlight the current section in the section nav ---- */
+  var links=document.querySelectorAll('.secnav a');
+  if('IntersectionObserver' in window){
+    var map={};links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a;});
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){
+          links.forEach(function(a){a.removeAttribute('aria-current');});
+          var a=map[en.target.id];if(a)a.setAttribute('aria-current','true');
+        }
+      });
+    },{rootMargin:'-20% 0px -65% 0px'});
+    document.querySelectorAll('main section[id]').forEach(function(s){io.observe(s);});
+  }
+})();
+</script>
+</body>
+</html>
